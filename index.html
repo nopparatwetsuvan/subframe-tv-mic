@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>SubFrame TV Mic — EN Only</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card: #111827;
+      --border: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --accent: #336359;
+      --green: #16a34a;
+      --red: #dc2626;
+      --blue: #2563eb;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 18px;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    h1 {
+      font-size: 19px;
+      margin: 0;
+    }
+    .badge {
+      background: var(--accent);
+      color: #ecfdf5;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .ip-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #090d16;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .target-preview {
+      font-size: 12px;
+      color: #6ee7b7;
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+    .status {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #d1d5db;
+      margin-bottom: 14px;
+      word-break: break-word;
+    }
+    .meter-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .meter-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .meter-track {
+      width: 100%;
+      height: 18px;
+      background: #111827;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #1f2937;
+    }
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e 0%, #eab308 70%, #ef4444 100%);
+      transition: width 70ms linear;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+    }
+    #btnSaveIp {
+      background: #374151;
+      font-size: 13px;
+      padding: 11px 14px;
+    }
+    #btnStart {
+      flex: 1;
+      background: var(--green);
+    }
+    #btnStop {
+      flex: 1;
+      background: var(--red);
+    }
+    #btnSend {
+      background: var(--blue);
+      font-size: 14px;
+      padding: 11px 16px;
+    }
+    .live-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 82px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #f3f4f6;
+      margin-bottom: 14px;
+      white-space: pre-wrap;
+    }
+    .manual-row {
+      display: flex;
+      gap: 8px;
+    }
+    .note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>SubFrame TV Mic</h1>
+      <span class="badge">EN ONLY</span>
+    </div>
+    <div class="desc">รับเสียงพูดภาษาอังกฤษจากมือถือ (iPhone / Android) แล้วส่งไปแปลบนกล่องซับทีวี</div>
+
+    <div class="label">กรอก IP ทีวี (เช่น 192.168.1.41 หรือ 192.168.1.41:8765)</div>
+    <div class="ip-row">
+      <input id="tvIpInput" type="text" value="192.168.1.41" placeholder="192.168.1.41" />
+      <button id="btnSaveIp" type="button">บันทึก IP</button>
+    </div>
+    <div id="targetPreview" class="target-preview">ปลายทาง: http://192.168.1.41:8765/subtitle</div>
+
+    <div id="statusBox" class="status">สถานะ: พร้อมใช้งาน (รับเฉพาะภาษาอังกฤษ en-US)</div>
+
+    <div class="meter-box">
+      <div class="meter-top">
+        <span id="meterLabel">ระดับเสียงไมค์: ปิดอยู่</span>
+        <span id="meterPercent">0%</span>
+      </div>
+      <div class="meter-track">
+        <div id="meterFill" class="meter-fill"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="btnStart" type="button">เริ่มฟังเสียง (EN)</button>
+      <button id="btnStop" type="button">หยุดฟัง</button>
+    </div>
+
+    <div class="label">ข้อความภาษาอังกฤษที่จับได้</div>
+    <div id="transcriptBox" class="live-box">ยังไม่มีเสียงพูดภาษาอังกฤษ...</div>
+
+    <div class="label">พิมพ์ข้อความอังกฤษส่งขึ้นทีวีโดยตรง</div>
+    <div class="manual-row">
+      <input id="manualText" type="text" placeholder="Type English line to test TV overlay..." />
+      <button id="btnSend" type="button">ส่ง</button>
+    </div>
+
+    <div class="note">
+      • มีแถบวัดระดับเสียงจริงให้ดูว่าไมค์รับเสียงเข้าไหม<br/>
+      • ล็อกโหมดรับเสียงภาษาอังกฤษ (<strong>en-US</strong>) และกรองตัวอักษรไทยออกอัตโนมัติ<br/>
+      • รอคำว่า "ถึงบ้านแล้ว" เพื่อเริ่มลุยฝั่ง APK และ PowerShell ต่อครับ
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'subframe_tv_ip_v1';
+    const DEFAULT_PORT = '8765';
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const tvIpInput = document.getElementById('tvIpInput');
+    const btnSaveIp = document.getElementById('btnSaveIp');
+    const targetPreview = document.getElementById('targetPreview');
+    const statusBox = document.getElementById('statusBox');
+    const meterLabel = document.getElementById('meterLabel');
+    const meterPercent = document.getElementById('meterPercent');
+    const meterFill = document.getElementById('meterFill');
+    const transcriptBox = document.getElementById('transcriptBox');
+    const manualText = document.getElementById('manualText');
+    const btnStart = document.getElementById('btnStart');
+    const btnStop = document.getElementById('btnStop');
+    const btnSend = document.getElementById('btnSend');
+
+    function buildTargetEndpoint(rawInput) {
+      let val = (rawInput || '').trim();
+      if (!val) val = '192.168.1.41';
+      val = val.replace(/^https?:\/\//i, '').replace(/\/+$/, '').replace(/\/subtitle$/i, '');
+      if (!val.includes(':')) {
+        val = val + ':' + DEFAULT_PORT;
+      }
+      return 'http://' + val + '/subtitle';
+    }
+
+    function refreshPreview() {
+      targetPreview.textContent = 'ปลายทาง: ' + buildTargetEndpoint(tvIpInput.value);
+    }
+
+    const savedIp = localStorage.getItem(STORAGE_KEY);
+    if (savedIp) {
+      tvIpInput.value = savedIp;
+    }
+    refreshPreview();
+    tvIpInput.addEventListener('input', refreshPreview);
+
+    btnSaveIp.addEventListener('click', () => {
+      const cleanIp = (tvIpInput.value || '').trim();
+      localStorage.setItem(STORAGE_KEY, cleanIp);
+      refreshPreview();
+      statusBox.textContent = 'บันทึก IP แล้ว -> ' + buildTargetEndpoint(cleanIp);
+    });
+
+    function keepEnglishOnly(raw) {
+      if (!raw) return '';
+      return raw
+        .replace(/[\u0E00-\u0E7F]/g, ' ')
+        .replace(/[^A-Za-z0-9\s.,!?'":;-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    let lastSent = '';
+    let lastSentTime = 0;
+
+    async function sendEnglishToTv(rawText) {
+      const englishOnly = keepEnglishOnly(rawText);
+      if (!englishOnly) return;
+
+      const now = Date.now();
+      if (englishOnly.toLowerCase() === lastSent.toLowerCase() && now - lastSentTime < 2200) {
+        return;
+      }
+      lastSent = englishOnly;
+      lastSentTime = now;
+
+      const endpoint = buildTargetEndpoint(tvIpInput.value);
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: englishOnly, lang: 'en-US' })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        statusBox.textContent = 'ส่งขึ้นทีวีแล้ว (EN): ' + englishOnly;
+      } catch (err) {
+        statusBox.textContent = 'ส่งไม่สำเร็จ (' + endpoint + '): ' + err.message;
+      }
+    }
+
+    // --- แถบวัดระดับเสียงแบบเรียลไทม์ (Audio Level Meter) ---
+    let audioCtx = null;
+    let analyser = null;
+    let micStream = null;
+    let meterRafId = null;
+
+    function updateMeterVisual(pct, labelText) {
+      const clamped = Math.max(0, Math.min(100, Math.round(pct)));
+      meterFill.style.width = clamped + '%';
+      meterPercent.textContent = clamped + '%';
+      if (labelText) meterLabel.textContent = labelText;
+    }
+
+    async function startAudioMeter() {
+      stopAudioMeter();
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        meterLabel.textContent = 'ระดับเสียงไมค์: ไม่รองรับ getUserMedia';
+        return;
+      }
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+        const source = audioCtx.createMediaStreamSource(micStream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.65;
+        source.connect(analyser);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        meterLabel.textContent = 'ระดับเสียงไมค์: กำลังรับเสียง';
+
+        const tick = () => {
+          if (!analyser) return;
+          analyser.getByteTimeDomainData(dataArray);
+          let sumSq = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            const norm = (dataArray[i] - 128) / 128;
+            sumSq += norm * norm;
+          }
+          const rms = Math.sqrt(sumSq / dataArray.length);
+          const pct = Math.min(100, rms * 340);
+          updateMeterVisual(pct);
+          meterRafId = requestAnimationFrame(tick);
+        };
+        meterRafId = requestAnimationFrame(tick);
+      } catch (err) {
+        meterLabel.textContent = 'ระดับเสียงไมค์: บล็อก/ไม่พร้อม (' + err.name + ')';
+        updateMeterVisual(0);
+      }
+    }
+
+    function stopAudioMeter() {
+      if (meterRafId) {
+        cancelAnimationFrame(meterRafId);
+        meterRafId = null;
+      }
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      if (audioCtx) {
+        audioCtx.close().catch(() => {});
+        audioCtx = null;
+      }
+      analyser = null;
+      updateMeterVisual(0, 'ระดับเสียงไมค์: ปิดอยู่');
+    }
+
+    // --- ระบบจับเสียงภาษาอังกฤษ (SpeechRecognition en-US) ---
+    let recognition = null;
+    let isListening = false;
+
+    if (!SpeechRecognition) {
+      statusBox.textContent = 'เบราว์เซอร์นี้ไม่รองรับ SpeechRecognition — ใช้ช่องพิมพ์ส่งขึ้นทีวีได้ครับ';
+    } else {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        statusBox.textContent = 'กำลังฟังเฉพาะภาษาอังกฤษ (en-US)...';
+      };
+
+      recognition.onresult = (event) => {
+        let finalChunk = '';
+        let interimChunk = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const piece = keepEnglishOnly(event.results[i][0].transcript);
+          if (!piece) continue;
+          if (event.results[i].isFinal) {
+            finalChunk += piece + ' ';
+          } else {
+            interimChunk += piece + ' ';
+          }
+        }
+
+        const preview = (finalChunk + interimChunk).replace(/\s+/g, ' ').trim();
+        if (preview) {
+          transcriptBox.textContent = preview;
+        }
+
+        const finalized = finalChunk.replace(/\s+/g, ' ').trim();
+        if (finalized) {
+          sendEnglishToTv(finalized);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === 'no-speech' && isListening) return;
+        statusBox.textContent = 'สถานะไมค์: ' + event.error;
+      };
+
+      recognition.onend = () => {
+        if (isListening) {
+          setTimeout(() => {
+            try {
+              recognition.lang = 'en-US';
+              recognition.start();
+            } catch (_) {}
+          }, 250);
+        } else {
+          statusBox.textContent = 'หยุดฟังเสียงแล้ว';
+        }
+      };
+    }
+
+    btnStart.addEventListener('click', async () => {
+      await startAudioMeter();
+      if (!recognition) return;
+      isListening = true;
+      try {
+        recognition.lang = 'en-US';
+        recognition.start();
+      } catch (err) {
+        statusBox.textContent = 'กำลังเริ่มไมค์...';
+      }
+    });
+
+    btnStop.addEventListener('click', () => {
+      isListening = false;
+      stopAudioMeter();
+      try { recognition.stop(); } catch (_) {}
+      statusBox.textContent = 'หยุดฟังเสียงแล้ว';
+    });
+
+    btnSend.addEventListener('click', () => {
+      const val = manualText.value;
+      if (!val.trim()) return;
+      transcriptBox.textContent = keepEnglishOnly(val) || val;
+      sendEnglishToTv(val);
+      manualText.value = '';
+    });
+
+    manualText.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnSend.click();
+      }
+    });
+  </script>
+</body>
+</html>
